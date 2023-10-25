@@ -6,6 +6,7 @@ import LocationInput from './screens/inputUser/locationInput';
 import DateInput from './screens/inputUser/dateInput';
 import BudgetInput from './screens/inputUser/budgetInput';
 import InterestInput from './screens/inputUser/interestsInput';
+import LoginUser from './screens/loginUser/loginUser';
 
 const Stack = createStackNavigator();
 
@@ -13,6 +14,7 @@ export default function Main() {
   return (
     <NavigationContainer>
       <Stack.Navigator  screenOptions={{ headerShown: false }}>
+        <Stack.Screen name='Login' component={LoginUser}/>
         <Stack.Screen name="City Input" component={CityInput} />
         <Stack.Screen name="Location Input" component={LocationInput} />
         <Stack.Screen name="Date Input" component={DateInput} />
