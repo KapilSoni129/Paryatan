@@ -3,6 +3,8 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, ImageBackground, Image, TextInput, Button, TouchableOpacity } from 'react-native';
 import * as Font from 'expo-font';
 
+import { useFormData } from '../../utils/formData';
+
 async function loadCustomFonts() {
   await Font.loadAsync({
     Lexend: require('../../assets/Lexend-Bold.ttf'),
@@ -14,7 +16,11 @@ export default function CityInput({ navigation }) {
   const backgroundImage = require('../../assets/BG.png');
   const logoSource = require('../../assets/ic_launcher.png');
 
-  const [searchText, setSearchText] = React.useState('');
+  const { formData, dispatch } = useFormData();
+
+  const handleNext = () => {
+    navigation.navigate('Location Input');
+  }
 
   useEffect(() => {
     loadCustomFonts();
@@ -34,11 +40,11 @@ export default function CityInput({ navigation }) {
           <TextInput
             style={styles.input}
             placeholder="Where do you want to go? (only cities)"
-            value={searchText}
-            onChangeText={setSearchText}
+            value={formData.city}
+            onChangeText={city => dispatch({ type: 'UPDATE_CITY', payload: city })}
           />
         </View>
-        <TouchableOpacity style={styles.buttonContain} onPress={() => navigation.navigate('Location Input')}>
+        <TouchableOpacity style={styles.buttonContain} onPress={handleNext}>
           <Image
             style={styles.searchIcon}
             source={require('../../assets/check_ring_round.png')}

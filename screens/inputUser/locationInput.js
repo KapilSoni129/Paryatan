@@ -3,6 +3,8 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, ImageBackground, Image, TextInput, Button, TouchableOpacity, VirtualizedList } from 'react-native';
 import * as Font from 'expo-font';
 
+import { useFormData } from '../../utils/formData';
+
 async function loadCustomFonts() {
   await Font.loadAsync({
     Lexend: require('../../assets/Lexend-Bold.ttf'),
@@ -14,7 +16,8 @@ export default function LocationInput({ navigation }) {
   const backgroundImage = require('../../assets/BG.png');
   const logoSource = require('../../assets/ic_launcher.png');
 
-  const [searchText, setSearchText] = React.useState('');
+  const { formData, dispatch } = useFormData();
+  
 
   useEffect(() => {
     loadCustomFonts();
@@ -34,8 +37,8 @@ export default function LocationInput({ navigation }) {
           <TextInput
             style={styles.input}
             placeholder="Do you have a start location?*"
-            value={searchText}
-            onChangeText={setSearchText}
+            value={formData.start_location}
+            onChangeText={(text) => dispatch({ type: 'UPDATE_START_LOCATION', payload: text })}
           />
         </View>
         <Text style={styles.greytext}>*If you are unsure you can skip to next</Text>

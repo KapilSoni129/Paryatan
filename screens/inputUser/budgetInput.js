@@ -3,6 +3,8 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, ImageBackground, Image, TextInput, Button, TouchableOpacity, VirtualizedList } from 'react-native';
 import * as Font from 'expo-font';
 
+import { useFormData } from '../../utils/formData';
+
 async function loadCustomFonts() {
   await Font.loadAsync({
     Lexend: require('../../assets/Lexend-Bold.ttf'),
@@ -14,7 +16,7 @@ export default function BudgetInput({ navigation }) {
   const backgroundImage = require('../../assets/BG.png');
   const logoSource = require('../../assets/ic_launcher.png');
 
-  const [searchText, setSearchText] = React.useState('');
+  const { formData, dispatch } = useFormData();
 
   useEffect(() => {
     loadCustomFonts();
@@ -34,8 +36,8 @@ export default function BudgetInput({ navigation }) {
           <TextInput
             style={styles.input}
             placeholder="What's your budget?"
-            value={searchText}
-            onChangeText={setSearchText}
+            value={formData.budget}
+            onChangeText={budget => dispatch({ type: 'UPDATE_BUDGET', payload: budget })}
           />
           <Image
             style={styles.ruppeeIcon    }

@@ -4,6 +4,8 @@ import { StyleSheet, Text, View, ImageBackground, Image, TouchableOpacity } from
 import CalendarPicker from 'react-native-calendar-picker';
 import * as Font from 'expo-font';
 
+import { useFormData } from '../../utils/formData';
+
 async function loadCustomFonts() {
   await Font.loadAsync({
     Lexend: require('../../assets/Lexend-Bold.ttf'),
@@ -14,20 +16,28 @@ export default function DateInput({ navigation }) {
   const backgroundImage = require('../../assets/BG.png');
   const logoSource = require('../../assets/ic_launcher.png');
 
-  const [selectedStartDate, setSelectedStartDate] = useState(null);
-  const [selectedEndDate, setSelectedEndDate] = useState(null);
+  const { formData, dispatch } = useFormData();
+
+  const selectedStartDate = formData.start_date;
+  const selectedEndDate = formData.end_date;
+
+  // console.log('selectedStartDate:', selectedStartDate);
+  // console.log('selectedEndDate:', selectedEndDate);
 
   const handleDateChange = (date, type) => {
     if (type === 'START_DATE') {
-      setSelectedStartDate(date);
+      dispatch({ type: 'UPDATE_START_DATE', payload: date });
     } else {
-      setSelectedEndDate(date);
+      dispatch({ type: 'UPDATE_END_DATE', payload: date });
     }
   };
-
+  
   useEffect(() => {
     loadCustomFonts();
   }, []);
+
+  // console.log('selectedStartDate:', selectedStartDate);
+  // console.log('selectedEndDate:', selectedEndDate);
 
   return (
     <ImageBackground source={backgroundImage} style={styles.container}>
@@ -37,7 +47,7 @@ export default function DateInput({ navigation }) {
         <Text style={styles.label}>Start Date</Text>
         <Text style={styles.dateText}>
           {selectedStartDate ? new Date(selectedStartDate).toLocaleDateString() : 'mm/dd/yyyy'}
-        </Text>
+        </Text> 
       </View>
       <View style={styles.inputContainer}>
         <Image style={styles.searchIcon} source={require('../../assets/Date_fill.png')} />
@@ -50,7 +60,7 @@ export default function DateInput({ navigation }) {
         allowRangeSelection
         selectedStartDate={selectedStartDate}
         selectedEndDate={selectedEndDate}
-        onDateChange={handleDateChange} 
+        onDateChange={handleDateChange}
         width={320}
         height={320}
         nextTitle=">>"
@@ -82,6 +92,7 @@ export default function DateInput({ navigation }) {
       <StatusBar style="auto" />
     </ImageBackground>
   );
+  
 }
 
 const styles = StyleSheet.create({

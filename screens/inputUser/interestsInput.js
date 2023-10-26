@@ -3,97 +3,132 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, ImageBackground, Image, TextInput, Button, TouchableOpacity, VirtualizedList } from 'react-native';
 import * as Font from 'expo-font';
 
+import { useFormData } from '../../utils/formData';
+import axios from 'axios';
+const realmAppId = 'application-0-itzvg';
+const partitionKey = 'city';
+
 async function loadCustomFonts() {
-  await Font.loadAsync({
-    Lexend: require('../../assets/Lexend-Bold.ttf'),
-  });
-}
-
-
-export default function InterestInput({ navigation }) { 
-  const backgroundImage = require('../../assets/BG.png');
-  const logoSource = require('../../assets/ic_launcher.png');
-
-  const [interests, setInterests] = useState([
-    { id: 1, label: 'Historical and Cultural', selected: false },
-    { id: 2, label: 'Nature and Adventure', selected: false },
-    { id: 3, label: 'Wellness and Relaxation', selected: false },
-    { id: 4, label: 'Culinary Exploration', selected: false },
-    { id: 5, label: 'Adventure Sports', selected: false },
-    { id: 6, label: 'Shopping and Local Markets', selected: false },
-    { id: 7, label: 'Photography and Scenic Exploration', selected: false },
-    { id: 8, label: 'Entertainment and Nightlife', selected: false },
-    { id: 9, label: 'Educational Travel', selected: false },
-    { id: 10, label: 'Religious and Spiritual Exploration', selected: false },
-  ]);
-
-  const toggleInterest = (interestId) => {
-    const updatedInterests = interests.map((interest) => {
-      if (interest.id === interestId) {
-        return { ...interest, selected: !interest.selected };
-      }
-      return interest;
+    await Font.loadAsync({
+      Lexend: require('../../assets/Lexend-Bold.ttf'),
     });
-    setInterests(updatedInterests);
-  };
+    }
 
-  useEffect(() => {
-    loadCustomFonts();
-  }, []);
+  export default function InterestInput({ navigation }) {
+    const backgroundImage = require('../../assets/BG.png');
+    const logoSource = require('../../assets/ic_launcher.png');
 
-  return (
-    <ImageBackground source={backgroundImage} style={styles.container}>
-        <Image
-          style={styles.logo}
-          source={logoSource}
-        />
+    const [loading, setLoading] = useState(false);
+
+    const buildUpdatedData = (formData, localInterests) => {
+    const selectedInterestLabels = interestsList
+        .filter((interest) => localInterests.includes(interest.id))
+        .map((interest) => interest.label);
+    
+        return { ...formData, interests: selectedInterestLabels };
+    };
+
+    const { formData, dispatch } = useFormData();
+  
+    const [localInterests, setLocalInterests] = useState(formData.interests || []);
+
+        const handleCreate = async (data) => {
+            setLoading(true);
+            const interestsString = localInterests.join(', ');
+            // console.log(formData);
+            const updatedFormData = { ...formData, interests: interestsString };
+            // console.log(updatedFormData);
+        
+            try {
+            const response = await axios.post('http:192.168.45.179:8000/generate_trip_plan/v2', updatedFormData);
+            console.log(response.data);
+
+            navigation.navigate('Maps view',{ tripPlanData: response.data })
+                
+            setLoading(false);
+            } catch (error) {
+            if (axios.isCancel(error)) {
+                console.log('Request canceled:', error.message);
+            } else {
+                console.error('Error sending data:', error);
+            }
+            setLoading(false);
+            }
+        };    
+  
+    const interestsList = [
+      { id: 1, label: 'Historical and Cultural' },
+      { id: 2, label: 'Nature and Adventure' },
+      { id: 3, label: 'Wellness and Relaxation' },
+      { id: 4, label: 'Culinary Exploration' },
+      { id: 5, label: 'Adventure Sports' },
+      { id: 6, label: 'Shopping and Local Markets' },
+      { id: 7, label: 'Photography and Scenic Exploration' },
+      { id: 8, label: 'Entertainment and Nightlife' },
+      { id: 9, label: 'Educational Travel' },
+      { id: 10, label: 'Religious and Spiritual Exploration' },
+    ];
+  
+    const toggleInterest = (interestLabel) => {
+      if (localInterests.includes(interestLabel)) {
+        setLocalInterests(localInterests.filter((label) => label !== interestLabel));
+      } else {
+        setLocalInterests([...localInterests, interestLabel]);
+      }
+  
+      // Update the interests in form data context
+      dispatch({ type: 'UPDATE_INTERESTS', payload: localInterests });
+    };
+  
+    useEffect(() => {
+      loadCustomFonts();
+    }, []);
+  
+    return (
+      <ImageBackground source={backgroundImage} style={styles.container}>
+        <Image style={styles.logo} source={logoSource} />
         <View style={styles.inputContainer}>
-            <Text style={{fontSize:22, fontWeight: 500, marginBottom:15}}>Select your Interests</Text>
-            {interests.map((interest) => (
-                <TouchableOpacity
-                    key={interest.id}
-                    onPress={() => toggleInterest(interest.id)}
-                    style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12}}
-                >
-                <View
-                    style={{
-                        width: 24,
-                        height: 24,
-                        borderRadius: 12,
-                        borderWidth: 1,
-                        borderColor: 'black',
-                        marginRight: 10,
-                        backgroundColor: interest.selected ? '#E8494A' : 'transparent',
-                    }}
-                />
-                <Text style={{fontSize:14, fontWeight: 500}}>{interest.label}</Text>
-                </TouchableOpacity>
-            ))}
+          <Text style={{ fontSize: 22, fontWeight: 500, marginBottom: 15 }}>Select your Interests</Text>
+          {interestsList.map((interest) => (
+            <TouchableOpacity
+              key={interest.label}
+              onPress={() => toggleInterest(interest.label)}
+              style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}
+            >
+              <View
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: 'black',
+                  marginRight: 10,
+                  backgroundColor: localInterests.includes(interest.label) ? '#E8494A' : 'transparent',
+                }}
+              />
+              <Text style={{ fontSize: 14, fontWeight: 500 }}>{interest.label}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
         <View style={styles.footerButtons}>
           <TouchableOpacity style={styles.buttonBack} onPress={() => navigation.navigate('Budget Input')}>
-              <Image
-                  style={styles.searchIcon}
-                  source={require('../../assets/Back.png')}
-              />
-              <View style={styles.buttonContiner}>
-                  <Text style={styles.buttonTexter}>Go back</Text>
-              </View>            
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonHalf} onPress={() => navigation.navigate('Interest Input')}>
-            <Image
-                style={styles.searchLogo}
-                source={require('../../assets/Group128.png')}
-            />
+            <Image style={styles.searchIcon} source={require('../../assets/Back.png')} />
             <View style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>Create</Text>
+              <Text style={styles.buttonTexter}>Go back</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonHalf} onPress={handleCreate}>
+            <Image style={styles.searchLogo} source={require('../../assets/Group128.png')} />
+            <View style={styles.buttonContainer}>
+              <Text style={styles.buttonText}>Create</Text>
             </View>
           </TouchableOpacity>
         </View>
-      <StatusBar style="auto" />
-    </ImageBackground>
-  );
-}
+        {loading && <Text>Loading...</Text>}    
+        <StatusBar style="auto" />
+      </ImageBackground>
+    );
+  }
 
 const styles = StyleSheet.create({
   container: {
