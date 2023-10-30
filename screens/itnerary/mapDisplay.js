@@ -3,7 +3,7 @@ import { View} from 'react-native';
 import MapView from 'react-native-maps';
 import MapViewDirections from "react-native-maps-directions";
 
-const API_KEY = 'AIzaSyDMMFJ_tZGf3H7NBgDt4cr7FZP0oj5oSBk';
+const API_KEY = '';
 
 const originalData = {
     "Date": [
