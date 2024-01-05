@@ -15,9 +15,13 @@ env
 Copy code
 # Google Maps API Key
 GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
+
 Available Scripts
+
 Navigate to the project directory and install dependencies:
+
 cd parytan
+
 ###`npm install`
 Start the Expo Development Server
 ###`npm run dev`
