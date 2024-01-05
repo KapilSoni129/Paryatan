@@ -1,78 +1,86 @@
-import React, {useRef, useState} from 'react';
-import { View} from 'react-native';
-import MapView from 'react-native-maps';
+import React, { useState } from "react";
+import { View } from "react-native";
+import MapView, { Marker } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 
-const API_KEY = '';
+const API_KEY = "";
+// console.log("API_KEY", API_KEY);
 
-const originalData = {
-    "Date": [
-      { "Location": "Udaipur", "Latitude": 24.566295, "Longitude": 73.753963 },
-      { "Location": "Mount Abu Wildlife Sanctuary", "Latitude": 24.593638, "Longitude": 72.730707 },
-      { "Location": "Dilwara Temples", "Latitude": 24.875093, "Longitude": 72.718486 },
-      { "Location": "Sunset Point Mount Abu", "Latitude": 24.604414, "Longitude": 72.726693 },
-      { "Location": "Lake Pichola", "Latitude": 24.576074, "Longitude": 73.678634 },
-      { "Location": "Udaipur City Palace", "Latitude": 24.577867, "Longitude": 73.683871 }
-    ]
-  };
-  
-  // Extract the "Latitude" and "Longitude" values
-  const extractedData = originalData["Date"].map(entry => ({
+const MapDisplay = ({ date, locations }) => {
+  // console.log("date: ", date);
+  // console.log("locations: ", locations);
+  // Calculate origin and destination based on the first and last locations
+
+  const extractedData = locations.map((entry) => ({
     Latitude: entry.Latitude,
-    Longitude: entry.Longitude
+    Longitude: entry.Longitude,
+    Name: entry.Name,
   }));
+
+  // console.log(extractedData);
+
   const firstEntry = extractedData[0];
-  const lastEntry = extractedData[extractedData.length - 1];  
 
+  const origin = {
+    latitude: firstEntry.Latitude,
+    longitude: firstEntry.Longitude,
+  };
 
-const MapDisplay = ({ date, locations, navigateToDay, currentIndex, numberOfDates }) => {
-    // Calculate origin and destination based on the first and last locations
-    const origin = {
-      latitude: firstEntry.Latitude,
-      longitude: firstEntry.Longitude,
-    };
-  
-    const destination = {
-      latitude: lastEntry.Latitude,
-      longitude: lastEntry.Longitude,
-    };
-  
-    const [distance, setDistance] = useState(0);
-    const [duration, setDuration] = useState(0);
-  
-    const traceRouteOnReady = (args) => {
-      if (args) {
-        setDistance(args.distance);
-        setDuration(args.duration);
-      }
-    };
-  
-    return (
-      <View style={{ flex: 1 }}>
-        <MapView
-          style={{ flex: 1 }}
-          initialRegion={{
-            latitude: origin.latitude,
-            longitude: origin.longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-        >
-          <MapViewDirections
-            origin={origin}
-            waypoints={extractedData.map((extractedData) => ({
+  const destination = {
+    latitude: firstEntry.Latitude,
+    longitude: firstEntry.Longitude,
+  };
+
+  // console.log("extractedData", extractedData);
+  // console.log("first", firstEntry);
+  // console.log("last", lastEntry);
+  // console.log(origin.latitude, origin.longitude);
+
+  const [distance, setDistance] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  const traceRouteOnReady = (args) => {
+    if (args) {
+      setDistance(args.distance);
+      setDuration(args.duration);
+    }
+  };
+
+  return (
+    <View style={{ flex: 1 }}>
+      <MapView
+        style={{ flex: 1, minHeight: 100 }}
+        initialRegion={{
+          latitude: origin.latitude,
+          longitude: origin.longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+      >
+        {extractedData.map((extractedData) => (
+          <Marker
+            coordinate={{
               latitude: extractedData.Latitude,
               longitude: extractedData.Longitude,
-            }))}
-            destination={destination}
-            apikey={API_KEY}
-            strokeColor="#E8494A"
-            strokeWidth={4}
-            onReady={traceRouteOnReady}
+            }}
+            title={extractedData.Name}
           />
-        </MapView>
-      </View>
-    );
-  };
-  
-  export default MapDisplay;
+        ))}
+        <MapViewDirections
+          origin={origin}
+          waypoints={extractedData.map((extractedData) => ({
+            latitude: extractedData.Latitude,
+            longitude: extractedData.Longitude,
+          }))}
+          destination={destination}
+          apikey={API_KEY}
+          strokeColor="#E8494A"
+          strokeWidth={4}
+          onReady={traceRouteOnReady}
+        />
+      </MapView>
+    </View>
+  );
+};
+
+export default MapDisplay;
