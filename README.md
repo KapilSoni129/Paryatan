@@ -6,10 +6,10 @@
 
 This project utilizes Expo for the frontend development. If you haven't installed Expo CLI, you can do so using the following command:
 
-###`npm install -g expo-cli`
+`npm install -g expo-cli`
 
 Environment Configuration
-Make sure to create an .env file in the project root and add the necessary environment variables, such as:
+Make sure to create a .env file in the project root and add the necessary environment variables, such as:
 
 env
 Copy code
@@ -22,12 +22,15 @@ Navigate to the project directory and install dependencies:
 
 cd parytan
 
-###`npm install`
+`npm install`
+
 Start the Expo Development Server
-###`npm run dev`
+
+`npm run dev`
+
 This will start the Expo development server. You can run the app on your connected device or emulator using the Expo Go app or by scanning the QR code in the terminal.
 
 Thank You
-Your Parytan project is now set up and ready to run locally. If you encounter any issues, feel free to reach out for support.
+Your Parytan project is now set up and ready to run locally. If you happen to have any problems, please feel free to reach out for support.
 
 Happy coding and safe travels!
