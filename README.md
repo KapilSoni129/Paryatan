@@ -6,7 +6,7 @@
 
 This project utilizes Expo for the frontend development. If you haven't installed Expo CLI, you can do so using the following command:
 
-npm install -g expo-cli
+###`npm install -g expo-cli`
 
 Environment Configuration
 Make sure to create an .env file in the project root and add the necessary environment variables, such as:
@@ -18,9 +18,9 @@ GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
 Available Scripts
 Navigate to the project directory and install dependencies:
 cd parytan
-npm install
+###`npm install`
 Start the Expo Development Server
-expo start
+###`npm run dev`
 This will start the Expo development server. You can run the app on your connected device or emulator using the Expo Go app or by scanning the QR code in the terminal.
 
 Thank You
